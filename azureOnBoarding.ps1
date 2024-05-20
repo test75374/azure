@@ -3,6 +3,10 @@ $namespaceName="ConflueraNamespace$(Get-Random)"
 $ehubName="ConflueraEventHub"
 $region="eastus"
 $authorizationRole="ConflueraAuthorizationRole"
+$conflueraDiagSettingsName ="ConflueraDiagSettingsName"
+$account = az account show
+$account_json = $account | ConvertFrom-Json
+$subscriptionId=$account_json.id 
 
 #New-AzResourceGroup –Name $rgName –Location $region
 az group create --name $rgName --location $region
@@ -61,14 +65,31 @@ else
 {
 	Write-Host "Success: Created listing keys of - "$rgName "/" $namespaceName "/" $ehubName
 }
+
+$serviceBusRuleId = "/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.EventHub/namespaces/$namespaceName/authorizationrules/RootManageSharedAccessKey"
+
+az monitor diagnostic-settings subscription create -n "$conflueraDiagSettingsName" --event-hub-auth-rule $serviceBusRuleId --event-hub-name $ehubName --logs "[{category:Security,enabled:true},{category:Administrative,enabled:true},{category:Policy,enabled:true}]"
+$keys = az eventhubs eventhub authorization-rule keys list --resource-group $rgName --namespace-name $namespaceName --eventhub-name $ehubName --name $authorizationRole
+if(!$?)
+{
+	Write-Host "Error: Failed creating diag settings - "$rgName "/" $namespaceName "/" $ehubName
+	return
+}
+else
+{
+	Write-Host "Success: Created diag settings - "$rgName "/" $namespaceName "/" $ehubName
+}
+
 $keys_j = $keys | ConvertFrom-Json
 Write-Host "`n`n`nCopy/Paste to Confluera monitor onboarding:"
 Write-Host $keys_j.primaryConnectionString -ForegroundColor Green
-
 
 # az eventhubs eventhub authorization-rule list --resource-group "ConflueraResourceGroup" --namespace-name "ConflueraNamespace" --eventhub-name "ConflueraEventHub"
 # az eventhubs namespace authorization-rule keys list --resource-group "ConflueraResourceGroup" --namespace-name "ConflueraNamespace" --name "RootManageSharedAccessKey"
 #New-AzServiceBusAuthorizationRule -Name "myauthorule1" -NamespaceName "ConflueraNamespace" -ResourceGroupName "ConflueraResourceGroup" -Rights $("Listen")
 #Get-AzEventHubKey -ResourceGroupName "ConflueraResourceGroup" -NamespaceName "ConflueraNamespace" -EventHubName "ConflueraEventHub" -AuthorizationRuleName "myauthorule"
-# Remove-AzResourceGroup $rgName
+# az group delete --name $rgName -y
+# az monitor diagnostic-settings subscription delete -n "$conflueraDiagSettingsName" -y 
 # Invoke-RestMethod -Uri "https://raw.githubusercontent.com/test75374/azure/main/azureOnBoarding.ps1" | Invoke-Expression
+
+
