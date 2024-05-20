@@ -5,9 +5,9 @@ $region="eastus"
 
 
 New-AzResourceGroup –Name $rgName –Location $region
-if($?)
+if(!$?)
 {
-	Write-Host "Error: Failed creating resource group - "$rgName " 
+	Write-Host "Error: Failed creating resource group - "$rgName 
 	return
 }
 else
@@ -15,8 +15,8 @@ else
 	Write-Host "Success: Created resource group - "$rgName
 }
 
-New-AzEventHubNamespace -ResourceGroupName $rgName -NamespaceName $namespaceName -Location namespaceName
-if($?)
+New-AzEventHubNamespace -ResourceGroupName $rgName -Name $namespaceName -Location $region
+if(!$?)
 {
 	Write-Host "Error: Failed creating evenhub namespaceName - "$rgName " " $namespaceName
 	return
@@ -26,8 +26,8 @@ else
 	Write-Host "Success: Created evenhub namespaceName - "$rgName " " $namespaceName
 }
 
-New-AzEventHub -ResourceGroupName $rgName -NamespaceName $namespaceName -EventHubName $ehubName
-if($?)
+New-AzEventHub -ResourceGroupName $rgName -NamespaceName $namespaceName -Name $ehubName
+if(!$?)
 {
 	Write-Host "Error: Failed creating evenhub entity - "$rgName " " $namespaceName " " $ehubName
 	return
@@ -36,3 +36,5 @@ else
 {
 	Write-Host "Success: Created evenhub entity - "$rgName " " $namespaceName " " $ehubName
 }
+
+# Remove-AzResourceGroup $rgName
