@@ -62,7 +62,8 @@ else
 	Write-Host "Success: Created listing keys of - "$rgName "/" $namespaceName "/" $ehubName
 }
 $keys_j = $keys | ConvertFrom-Json
-Write-Host "Copy/Paste to Confluera monitor onboarding "$keys_j.primaryConnectionString
+Write-Host "`n`n`nCopy/Paste to Confluera monitor onboarding:"
+Write-Host $keys_j.primaryConnectionString -ForegroundColor Green
 
 
 # az eventhubs eventhub authorization-rule list --resource-group "ConflueraResourceGroup" --namespace-name "ConflueraNamespace" --eventhub-name "ConflueraEventHub"
