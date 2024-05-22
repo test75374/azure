@@ -88,8 +88,8 @@ Write-Host $keys_j.primaryConnectionString -ForegroundColor Green
 # az eventhubs namespace authorization-rule keys list --resource-group "ConflueraResourceGroup" --namespace-name "ConflueraNamespace" --name "RootManageSharedAccessKey"
 #New-AzServiceBusAuthorizationRule -Name "myauthorule1" -NamespaceName "ConflueraNamespace" -ResourceGroupName "ConflueraResourceGroup" -Rights $("Listen")
 #Get-AzEventHubKey -ResourceGroupName "ConflueraResourceGroup" -NamespaceName "ConflueraNamespace" -EventHubName "ConflueraEventHub" -AuthorizationRuleName "myauthorule"
-# az group delete --name $rgName -y
 # az monitor diagnostic-settings subscription delete -n "$conflueraDiagSettingsName" -y 
+# az group delete --name $rgName -y
 # Invoke-RestMethod -Uri "https://raw.githubusercontent.com/test75374/azure/main/azureOnBoarding.ps1" | Invoke-Expression
 
 
