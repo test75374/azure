@@ -3,7 +3,8 @@ $namespaceName="ConflueraNamespace$(Get-Random)"
 $ehubName="ConflueraEventHub"
 $region="eastus"
 $authorizationRole="ConflueraAuthorizationRole"
-$conflueraDiagSettingsName ="ConflueraDiagSettingsName"
+$conflueraDiagSettingsName="ConflueraDiagSettingsMonitor"
+$ConflueraDiagSettingsNameAD="ConflueraDiagSettingsAD"
 $account = az account show
 $account_json = $account | ConvertFrom-Json
 $subscriptionId=$account_json.id 
@@ -94,18 +95,27 @@ Write-Host $keys_j.primaryConnectionString -ForegroundColor Green
 # Generate an access token for the management API
 $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com").Token
 
+if(!$?)
+{
+	Write-Host "Error get access token"
+	return
+}
 # Set the API endpoint 
-$apiEndpoint = "https://management.azure.com/providers/microsoft.aadiam/diagnosticSettings/ss`?api-version=2017-04-01-preview"
+$apiEndpoint = "https://management.azure.com/providers/microsoft.aadiam/diagnosticSettings/$ConflueraDiagSettingsNameAD`?api-version=2017-04-01-preview"
 
 $headers = @{                                                                       
     "Authorization" = "Bearer $accessToken"
     "Content-Type" = "application/json"
 }
-$json = '{"id":"/providers/microsoft.aadiam/providers/microsoft.insights/diagnosticSettings/ss","name":"ss","properties":{"logs":[{"category":"AuditLogs","categoryGroup":null,"enabled":true,"retentionPolicy":{"days":0,"enabled":false}},{"category":"SignInLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"NonInteractiveUserSignInLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"ServicePrincipalSignInLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"ManagedIdentitySignInLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"ProvisioningLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"ADFSSignInLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"RiskyUsers","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"UserRiskEvents","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"NetworkAccessTrafficLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"RiskyServicePrincipals","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"ServicePrincipalRiskEvents","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"EnrichedOffice365AuditLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"MicrosoftGraphActivityLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}},{"category":"RemoteNetworkHealthLogs","categoryGroup":null,"enabled":false,"retentionPolicy":{"days":0,"enabled":false}}],"metrics":[],"eventHubAuthorizationRuleId":"$serviceBusRuleId","eventHubName":"$ehubName"}}'
+$json = "{'id':'/providers/microsoft.aadiam/providers/microsoft.insights/diagnosticSettings/$ConflueraDiagSettingsNameAD','name':'$ConflueraDiagSettingsNameAD','properties':{'logs':[{'category':'AuditLogs','categoryGroup':null,'enabled':true,'retentionPolicy':{'days':0,'enabled':false}},{'category':'SignInLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'NonInteractiveUserSignInLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'ServicePrincipalSignInLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'ManagedIdentitySignInLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'ProvisioningLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'ADFSSignInLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'RiskyUsers','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'UserRiskEvents','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'NetworkAccessTrafficLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'RiskyServicePrincipals','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'ServicePrincipalRiskEvents','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'EnrichedOffice365AuditLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'MicrosoftGraphActivityLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}},{'category':'RemoteNetworkHealthLogs','categoryGroup':null,'enabled':false,'retentionPolicy':{'days':0,'enabled':false}}],'metrics':[],'eventHubAuthorizationRuleId':'$serviceBusRuleId','eventHubName':'$ehubName'}}"
 
 $response = Invoke-RestMethod -Uri $apiEndpoint -Headers $headers -Body $json -Method PUT
+if(!$?)
+{
+	Write-Host "Error create diagnosticSettings for Azure AD"
+	return
+}
 Write-Output "Diagnostic setting Created successfully."
-
 
 
 
@@ -113,7 +123,7 @@ Write-Output "Diagnostic setting Created successfully."
 #$accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com").Token
 
 # Set the API endpoint 
-#$apiEndpoint = "https://management.azure.com/providers/microsoft.aadiam/diagnosticSettings/ruk?api-version=2017-04-01-preview"
+#$apiEndpoint = "https://management.azure.com/providers/microsoft.aadiam/diagnosticSettings/$ConflueraDiagSettingsNameAD`?api-version=2017-04-01-preview"
 
 #$headers = @{
 #    "Authorization" = "Bearer $accessToken"
