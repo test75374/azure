@@ -1,5 +1,4 @@
 $rgName="ConflueraResourceGroup"
-$namespaceName="ConflueraNamespace$(Get-Random)"
 $ehubName="ConflueraEventHub"
 $region="eastus"
 $authorizationRole="ConflueraAuthorizationRole"
@@ -14,6 +13,7 @@ $subscriptionIds = @("ac08270f-318f-4fe5-aa77-7a1ac39af23f", "9b36b74d-2b1d-4085
 $ADOnboarded = $false
 foreach ( $subscriptionId in $subscriptionIds )
 {
+    $namespaceName="ConflueraNamespace$(Get-Random)"
     az account set --subscription $subscriptionId > $null
     if(!$?)
     {
