@@ -10,7 +10,7 @@ $account_json = $account | ConvertFrom-Json
 $subscriptionId=$account_json.id 
 
 #New-AzResourceGroup –Name $rgName –Location $region
-az group create --name $rgName --location $region
+az group create --name $rgName --location $region > $null
 if(!$?)
 {
 	Write-Host "Error: Failed creating resource group - "$rgName -ForegroundColor Red
@@ -18,7 +18,7 @@ if(!$?)
 }
 
 #New-AzEventHubNamespace -ResourceGroupName $rgName -Name $namespaceName -Location $region
-az eventhubs namespace create --name $namespaceName --resource-group $rgName -l $region
+az eventhubs namespace create --name $namespaceName --resource-group $rgName -l $region > $null
 if(!$?)
 {
 	Write-Host "Error: Failed creating evenhub namespaceName - "$rgName "/" $namespaceName -ForegroundColor Red
@@ -26,21 +26,21 @@ if(!$?)
 }
 
 #New-AzEventHub -ResourceGroupName $rgName -NamespaceName $namespaceName -Name $ehubName
-az eventhubs eventhub create --name $ehubName --resource-group $rgName --namespace-name $namespaceName
+az eventhubs eventhub create --name $ehubName --resource-group $rgName --namespace-name $namespaceName > $null
 if(!$?)
 {
 	Write-Host "Error: Failed creating evenhub entity - "$rgName "/" $namespaceName "/" $ehubName -ForegroundColor Red
 	return
 }
 
-az eventhubs eventhub authorization-rule create --resource-group $rgName --namespace-name $namespaceName --eventhub-name $ehubName --rights "Listen" --name $authorizationRole
+az eventhubs eventhub authorization-rule create --resource-group $rgName --namespace-name $namespaceName --eventhub-name $ehubName --rights "Listen" --name $authorizationRole > $null
 if(!$?)
 {
 	Write-Host "Error: Failed creating eventhub authorization-rule on - "$rgName "/" $namespaceName "/" $ehubName -ForegroundColor Red
 	return
 }
 
-$keys = az eventhubs eventhub authorization-rule keys list --resource-group $rgName --namespace-name $namespaceName --eventhub-name $ehubName --name $authorizationRole
+$keys = az eventhubs eventhub authorization-rule keys list --resource-group $rgName --namespace-name $namespaceName --eventhub-name $ehubName --name $authorizationRole > $null
 if(!$?)
 {
 	Write-Host "Error: Failed listing keys of - "$rgName "/" $namespaceName "/" $ehubName -ForegroundColor Red
@@ -49,7 +49,7 @@ if(!$?)
 
 $serviceBusRuleId = "/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.EventHub/namespaces/$namespaceName/authorizationrules/RootManageSharedAccessKey"
 
-az monitor diagnostic-settings subscription create -n "$conflueraDiagSettingsName" --event-hub-auth-rule $serviceBusRuleId --event-hub-name $ehubName --logs "[{category:Security,enabled:true},{category:Administrative,enabled:true},{category:Policy,enabled:true}]"
+az monitor diagnostic-settings subscription create -n "$conflueraDiagSettingsName" --event-hub-auth-rule $serviceBusRuleId --event-hub-name $ehubName --logs "[{category:Security,enabled:true},{category:Administrative,enabled:true},{category:Policy,enabled:true}]" > $null
 
 if(!$?)
 {
