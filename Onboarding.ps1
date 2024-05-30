@@ -40,7 +40,7 @@ if(!$?)
 	return
 }
 
-$keys = az eventhubs eventhub authorization-rule keys list --resource-group $rgName --namespace-name $namespaceName --eventhub-name $ehubName --name $authorizationRole > $null
+$keys = az eventhubs eventhub authorization-rule keys list --resource-group $rgName --namespace-name $namespaceName --eventhub-name $ehubName --name $authorizationRole
 if(!$?)
 {
 	Write-Host "Error: Failed listing keys of - "$rgName "/" $namespaceName "/" $ehubName -ForegroundColor Red
@@ -66,7 +66,7 @@ Write-Host $keys_j.primaryConnectionString -ForegroundColor Green
 #New-AzServiceBusAuthorizationRule -Name "myauthorule1" -NamespaceName "ConflueraNamespace" -ResourceGroupName "ConflueraResourceGroup" -Rights $("Listen")
 #Get-AzEventHubKey -ResourceGroupName "ConflueraResourceGroup" -NamespaceName "ConflueraNamespace" -EventHubName "ConflueraEventHub" -AuthorizationRuleName "myauthorule"
 
-# Invoke-RestMethod -Uri "https://raw.githubusercontent.com/test75374/azure/main/azureOnBoarding.ps1" | Invoke-Expression
+# Invoke-RestMethod -Uri "https://raw.githubusercontent.com/test75374/azure/main/Onboarding.ps1" | Invoke-Expression
 
 # Generate an access token for the management API
 $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com").Token
