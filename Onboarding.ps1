@@ -97,11 +97,11 @@ foreach ( $subscriptionId in $subscriptionIds )
                 Write-Host "Error create diagnosticSettings for Azure AD" -ForegroundColor Red
                 continue;
             }
-            $onboardingID = $subscriptionId+","+$conflueraDiagSettingsName+","+$rgName+","+$ConflueraDiagSettingsNameAD
+            $onboardingID = $subscriptionId+"*"+$conflueraDiagSettingsName+"*"+$rgName+"*"+$ConflueraDiagSettingsNameAD
             $toPrint = $toPrint + ":::" + $onboardingID
             $ADOnboarded = $true
      } else {
-        $onboardingID = $subscriptionId+","+$conflueraDiagSettingsName+","+$rgName
+        $onboardingID = $subscriptionId+"*"+$conflueraDiagSettingsName+"*"+$rgName
         $toPrint = $toPrint + ":::" + $onboardingID
      }
     Write-Host "`n`n`nCopy/Paste to UnOnboard script:"
