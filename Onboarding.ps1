@@ -10,6 +10,7 @@ $account_json = $account | ConvertFrom-Json
 $onboardAD = $true
 $subscriptionIds = @("ac08270f-318f-4fe5-aa77-7a1ac39af23f", "9b36b74d-2b1d-4085-b2d1-55c95f1dc6d0")
 
+$toPrint = ""
 $ADOnboarded = $false
 foreach ( $subscriptionId in $subscriptionIds )
 {
@@ -33,30 +34,47 @@ foreach ( $subscriptionId in $subscriptionIds )
     az eventhubs namespace create --name $namespaceName --resource-group $rgName -l $region > $null
     if(!$?)
     {
-        Write-Host "Error: Failed creating evenhub namespaceName - "$rgName "/" $namespaceName -ForegroundColor Red
-        continue;
+        $isDevError = $Error[0].Exception.Message | Select-String -Pattern "preview and under development"
+        if ($isDevError -eq $null)
+        {
+            Write-Host "Error: Failed creating evenhub namespaceName - "$rgName "/" $namespaceName " - " $Error[0].Exception.Message -ForegroundColor Red
+            continue;
+        }
+
     }
 
     #New-AzEventHub -ResourceGroupName $rgName -NamespaceName $namespaceName -Name $ehubName
     az eventhubs eventhub create --name $ehubName --resource-group $rgName --namespace-name $namespaceName > $null
     if(!$?)
     {
-        Write-Host "Error: Failed creating evenhub entity - "$rgName "/" $namespaceName "/" $ehubName -ForegroundColor Red
-        continue;
+        $isDevError = $Error[0].Exception.Message | Select-String -Pattern "preview and under development"
+        if ($isDevError -eq $null)
+        {
+            Write-Host "Error: Failed creating evenhub namespaceName - "$rgName "/" $namespaceName "/" $ehubName " - " $Error[0].Exception.Message -ForegroundColor Red
+            continue;
+        }
     }
 
     az eventhubs eventhub authorization-rule create --resource-group $rgName --namespace-name $namespaceName --eventhub-name $ehubName --rights "Listen" --name $authorizationRole > $null
     if(!$?)
     {
-        Write-Host "Error: Failed creating eventhub authorization-rule on - "$rgName "/" $namespaceName "/" $ehubName -ForegroundColor Red
-        continue;
+        $isDevError = $Error[0].Exception.Message | Select-String -Pattern "preview and under development"
+        if ($isDevError -eq $null)
+        {
+            Write-Host "Error: Failed creating eventhub authorization-rule on - "$rgName "/" $namespaceName "/" $ehubName " - " $Error[0].Exception.Message -ForegroundColor Red
+            continue;
+        }
     }
 
     $keys = az eventhubs eventhub authorization-rule keys list --resource-group $rgName --namespace-name $namespaceName --eventhub-name $ehubName --name $authorizationRole
     if(!$?)
     {
-        Write-Host "Error: Failed listing keys of - "$rgName "/" $namespaceName "/" $ehubName -ForegroundColor Red
-        continue;
+        $isDevError = $Error[0].Exception.Message | Select-String -Pattern "preview and under development"
+        if ($isDevError -eq $null)
+        {
+            Write-Host "Error: Failed listing keys of - "$rgName "/" $namespaceName "/" $ehubName " - " $Error[0].Exception.Message -ForegroundColor Red
+            continue;
+        }
     }
 
     $serviceBusRuleId = "/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.EventHub/namespaces/$namespaceName/authorizationrules/RootManageSharedAccessKey"
@@ -70,18 +88,19 @@ foreach ( $subscriptionId in $subscriptionIds )
     }
 
     $keys_j = $keys | ConvertFrom-Json
-    Write-Host "`n`n`nCopy/Paste to Confluera monitor onboarding:"
-    Write-Host $keys_j.primaryConnectionString -ForegroundColor Green
+    # Write-Host "`n`n`nCopy/Paste to Confluera monitor onboarding:"
+    $primaryConnectionString = $keys_j.primaryConnectionString
+    $toPrint = $toPrint + "###" + $primaryConnectionString
     if (!($ADOnboarded) -and ($onboardAD)) {
             # Generate an access token for the management API
-            $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com").Token
+            $accessToken = az account get-access-token --resource=https://management.azure.com --query accessToken
 
             if(!$?)
             {
                 Write-Host "Error get access token" -ForegroundColor Red
                 continue;
             }
-
+            $accessToken = $accessToken.Replace('"', '')
             # Set the API endpoint
             $apiEndpoint = "https://management.azure.com/providers/microsoft.aadiam/diagnosticSettings/$ConflueraDiagSettingsNameAD`?api-version=2017-04-01-preview"
 
@@ -97,17 +116,17 @@ foreach ( $subscriptionId in $subscriptionIds )
                 Write-Host "Error create diagnosticSettings for Azure AD" -ForegroundColor Red
                 continue;
             }
-            $onboardingID = $subscriptionId+"*"+$conflueraDiagSettingsName+"*"+$rgName+"*"+$ConflueraDiagSettingsNameAD
+            $onboardingID = $subscriptionId+","+$conflueraDiagSettingsName+","+$rgName+","+$ConflueraDiagSettingsNameAD
             $toPrint = $toPrint + ":::" + $onboardingID
             $ADOnboarded = $true
      } else {
-        $onboardingID = $subscriptionId+"*"+$conflueraDiagSettingsName+"*"+$rgName
+        $onboardingID = $subscriptionId+","+$conflueraDiagSettingsName+","+$rgName
         $toPrint = $toPrint + ":::" + $onboardingID
      }
-    Write-Host "`n`n`nCopy/Paste to UnOnboard script:"
-    Write-Host $toPrint
-}
 
+}
+Write-Host "`n`n`nCopy/Paste to UnOnboard script:"
+Write-Host $toPrint -ForegroundColor Green
 
 
 
