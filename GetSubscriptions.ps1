@@ -22,4 +22,6 @@ if(!$?)
 }
 
 Write-Host "`n`nCopy/Past Subscriptions you would like to onboard: `n" -ForegroundColor Green
-$response.data
+
+
+Foreach ($i in $response.data) {$i}
