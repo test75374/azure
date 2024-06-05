@@ -22,7 +22,7 @@ if(!$?)
 }
 $response.data
 
-Write-Host "`n`nCopy/Past Subscriptions to onboard: " -ForegroundColor Green
+Write-Host "`n`nCopy/Past Subscriptions you would like to onboard: `n" -ForegroundColor Green
 $response.data | ForEach-Object {
-    write-host $_.subscriptionId" ("$_.subscriptionName")"
+    write-host $_.subscriptionId" ("$_.subscriptionName")" -ForegroundColor Green
 }
