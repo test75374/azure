@@ -20,7 +20,6 @@ if(!$?)
 	Write-Host "Error getting subscription list" -ForegroundColor Red
 	return
 }
-$response.data
 
 Write-Host "`n`nCopy/Past Subscriptions you would like to onboard: `n" -ForegroundColor Green
 $response.data | ForEach-Object {
