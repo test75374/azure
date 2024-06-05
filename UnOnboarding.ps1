@@ -51,6 +51,7 @@ foreach ($conf in $config_arr) {
                 Write-Host "Error remove diagnose AD "$ConflueraDiagSettingsNameAD -ForegroundColor Red
                 continue;
             }
+            Write-Host "Successfully Unonboarded from Azure AD" -ForegroundColor Green
 
         }
         az group delete --name $rgName -y
