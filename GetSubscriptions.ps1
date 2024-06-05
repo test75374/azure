@@ -1,4 +1,4 @@
-# Generate an access token for the management API
+Set-Item -Path Env:\AZURE_CLIENTS_SHOW_SECRETS_WARNING -Value $false
 $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com").Token
 
 if(!$?)

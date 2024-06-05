@@ -1,3 +1,4 @@
+Set-Item -Path Env:\AZURE_CLIENTS_SHOW_SECRETS_WARNING -Value $false
 $config = "###Endpoint=flueraEventHub:::ac08270f-318f-4fe5-aa77-7a1ac39af23f,ConflueraDiagSettingsMonitor,ConflueraResourceGroup,ConflueraDiagSettingsAD###EndpoinEntityPath=ConflueraEventHub:::9b36b74d-2b1d-4085-b2d1-55c95f1dc6d0,ConflueraDiagSettingsMonitor,ConflueraResourceGroup"
 
 

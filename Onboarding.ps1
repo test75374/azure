@@ -1,3 +1,4 @@
+Set-Item -Path Env:\AZURE_CLIENTS_SHOW_SECRETS_WARNING -Value $false
 $rgName="ConflueraResourceGroup"
 $ehubName="ConflueraEventHub"
 $region="eastus"
@@ -137,6 +138,6 @@ Write-Host $toPrint -ForegroundColor Green
 #New-AzServiceBusAuthorizationRule -Name "myauthorule1" -NamespaceName "ConflueraNamespace" -ResourceGroupName "ConflueraResourceGroup" -Rights $("Listen")
 #Get-AzEventHubKey -ResourceGroupName "ConflueraResourceGroup" -NamespaceName "ConflueraNamespace" -EventHubName "ConflueraEventHub" -AuthorizationRuleName "myauthorule"
 
-# Invoke-RestMethod -Uri "https://raw.githubusercontent.com/test75374/azure/main/Onboarding.ps1" | Invoke-Expression
+# Invoke-RestMethod -Uri "https://raw.githubusercontent.com/test75374/azure/main/GetSubscriptions.ps1" | Invoke-Expression
 
 
