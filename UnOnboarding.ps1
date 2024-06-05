@@ -59,5 +59,6 @@ foreach ($conf in $config_arr) {
             Write-Host "Error: Failed remove resource grope - "$subscriptionId "/"$rgName -ForegroundColor Red
             continue;
         }
+        Write-Host "Successfully Unonboarded from "$subscriptionId -ForegroundColor Green
     }
 }
